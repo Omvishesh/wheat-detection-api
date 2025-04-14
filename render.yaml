@@ -1,0 +1,44 @@
+services:
+  - type: web
+    name: wheat-detection-api
+    env: python
+    buildCommand: |
+      # Update pip first
+      pip install --upgrade pip
+      # Install build tools and wheel
+      pip install wheel setuptools
+      # Install system dependencies for opencv, pillow, and tensorflow
+      apt-get update && apt-get install -y libsm6 libxext6 libxrender-dev libglib2.0-0
+      # Install Python dependencies
+      pip install --only-binary=:all: --prefer-binary -r requirements.txt
+      # Add any model download commands here if needed
+    startCommand: python main.py
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.8
+      - key: API_KEY
+        sync: false
+      - key: MODEL_PATH
+        value: logs/object20250403T2351/mask_rcnn_object_0010.h5
+      - key: PORT
+        value: 10000
+    packages:
+      - python3-dev
+      - build-essential
+      - libffi-dev
+      - libjpeg-dev
+      - libpng-dev
+      - libtiff-dev
+      - libopenjp2-7-dev
+      - libwebp-dev
+      - zlib1g-dev
+      - libfreetype6-dev
+      - liblcms2-dev
+      - libsm6
+      - libxext6
+      - libxrender-dev
+      - libglib2.0-0
+    disk:
+      name: model-storage
+      mountPath: /opt/render/project/src/logs
+      sizeGB: 5
